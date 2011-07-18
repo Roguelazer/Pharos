@@ -19,10 +19,13 @@ def load(filename):
             watches_doc = watcher["watches"]
             watches = []
             for watch in watches_doc:
+                common_kwargs = {}
+                if "interval" in watch:
+                    common_kwargs["interval"] = watch["interval"]
                 if watch["type"] == "command":
-                    watches.append(pharos.CommandMetricWatcher(name=watch["name"], command=watch["command"]))
+                    watches.append(pharos.CommandMetricWatcher(name=watch["name"], command=watch["command"], **common_kwargs))
                 elif watch["type"] == "get":
-                    watches.append(pharos.PageGETMetricWatcher(name=watch["name"], url=watch["url"], thresholds=watch["thresholds"]))
+                    watches.append(pharos.PageGETMetricWatcher(name=watch["name"], url=watch["url"], thresholds=watch["thresholds"], **common_kwargs))
                 else:
                     raise ConfigParseError("Expected type to be one of 'command', 'get' in watch set %s" % name)
             metric_watcher_sets.append(pharos.WatcherSet(name, watches))
