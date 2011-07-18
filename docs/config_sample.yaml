@@ -1,0 +1,26 @@
+page_tag: "Watching so you don't have to"
+metric_watcher_sets:
+    - name: "Watch Set 1"
+      watches:
+       - type: command
+         name: "Is True?"
+         command: "true"
+       - type: command
+         name: "Is False?"
+         command: "false"
+       - type: get
+         name: "Is Google Up?"
+         url: "http://www.google.com"
+         thresholds: [0.001, 0.100, 1.0]
+    - name: "Watch Set 2"
+      watches:
+       - type: command
+         name: "Also True?"
+         command: "true"
+       - type: command
+         name: "Also False?"
+         command: "false"
+       - type: get
+         name: "Is Apple Up?"
+         url: "http://www.apple.com"
+         thresholds: [0.001, 0.100, 1.0]

@@ -8,15 +8,22 @@ import tornado.httpserver
 import tornado.ioloop
 
 import pharos
+import pharos.config
 
 if __name__ == '__main__':
     parser = optparse.OptionParser()
-    parser.add_option("-c", "--config-file", action="store", dest="config_file",  default="docs/pharos/config_sample.py", help="Configuration file (default %default)")
+    parser.add_option("-c", "--config-file", action="store", dest="config_file",  default=None, help="Configuration file (default %default)")
+    parser.add_option("-y", "--yaml-config-file", action="store", dest="yaml_config_file", help="YAML Configuration file (default %default)")
     parser.add_option("-s", "--static-path", action="store", dest="static_path", default="share/pharos/", help="Path for static files (default %default)")
     parser.add_option("-v", "--verbose", action="count", dest="verbose")
     parser.add_option("-P", "--port", action="store", dest="port", type="int", default=8811)
 
     (options, args) = parser.parse_args()
+
+    if not (options.yaml_config_file or options.config_file):
+        parser.error("You must specify either a --config-file or a --yaml-config-file")
+    if options.yaml_config_file and options.config_file:
+        parser.error("You cannot specify both --config-file and --yaml-config-file")
 
     if options.verbose > 1:
         level = logging.DEBUG
@@ -25,12 +32,12 @@ if __name__ == '__main__':
     else:
         level = logging.WARNING
     logging.basicConfig(level=level, stream=sys.stdout)
-    
+
     app_settings = {
         'debug': True,
         'static_path': options.static_path
     }
-    
+
     application = tornado.web.Application([
         (r"/", pharos.MainHandler),
         (r"/poll/json", pharos.PollJSONHandler),
@@ -43,7 +50,10 @@ if __name__ == '__main__':
 
     page_tag = None
 
-    execfile(options.config_file)
+    if options.config_file:
+        execfile(options.config_file)
+    elif options.yaml_config_file:
+        page_tag, metric_watcher_sets = pharos.config.load(options.yaml_config_file)
 
     # We're just going to stuff this variable into our application even though tornado knows nothing about it
     # Allows us to avoid nasty global
