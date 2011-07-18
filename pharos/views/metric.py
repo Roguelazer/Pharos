@@ -1,5 +1,4 @@
-import os.path
-import pystache
+from .base_view import BaseView
 
-class Metric(pystache.View):
-    template_path = os.path.dirname(__file__)
+class Metric(BaseView):
+    pass

@@ -1,10 +1,7 @@
-import os.path
 import datetime
 
-import pystache
+from .base_view import BaseView
 
-class Dashboard(pystache.View):
-    template_path = os.path.dirname(__file__)
+class Dashboard(BaseView):
     def generated_when(self):
         return datetime.datetime.now().strftime("%X %x")
-    
