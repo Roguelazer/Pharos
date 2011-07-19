@@ -20,3 +20,8 @@ metric_watcher_sets = [
 	])
 
 ]
+
+app_config = {
+    "listen_host": "0.0.0.0",
+    "listen_port": 8080
+}

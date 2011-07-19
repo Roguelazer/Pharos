@@ -14,6 +14,13 @@ def load(filename):
     with open(filename) as f:
         doc = yaml.safe_load(f.read())
         page_tag = doc.get("page_tag", "")
+        app_config = {}
+        if "listen_port" in doc:
+            app_config["listen_port"] = doc["listen_port"]
+        if "listen_host" in doc:
+            app_config["listen_host"] = doc["listen_host"]
+        port = doc.get("port", 8080)
+        host = doc.get("listen_host", "0.0.0.0")
         for watcher in doc.get("metric_watcher_sets", []):
             name = watcher["name"]
             watches_doc = watcher["watches"]
@@ -29,4 +36,4 @@ def load(filename):
                 else:
                     raise ConfigParseError("Expected type to be one of 'command', 'get' in watch set %s" % name)
             metric_watcher_sets.append(pharos.WatcherSet(name, watches))
-    return (page_tag, metric_watcher_sets)
+    return (page_tag, metric_watcher_sets, app_config)

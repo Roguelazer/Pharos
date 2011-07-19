@@ -1,4 +1,6 @@
 page_tag: "Watching so you don't have to"
+listen_host: 0.0.0.0
+listen_port: 8080
 metric_watcher_sets:
     - name: "Watch Set 1"
       watches:

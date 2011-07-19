@@ -16,7 +16,6 @@ if __name__ == '__main__':
     parser.add_option("-y", "--yaml-config-file", action="store", dest="yaml_config_file", help="YAML Configuration file (default %default)")
     parser.add_option("-s", "--static-path", action="store", dest="static_path", default="share/pharos/", help="Path for static files (default %default)")
     parser.add_option("-v", "--verbose", action="count", dest="verbose")
-    parser.add_option("-P", "--port", action="store", dest="port", type="int", default=8811)
 
     (options, args) = parser.parse_args()
 
@@ -43,17 +42,17 @@ if __name__ == '__main__':
         (r"/poll/json", pharos.PollJSONHandler),
     ], **app_settings)
 
+    if options.config_file:
+        execfile(options.config_file)
+    elif options.yaml_config_file:
+        page_tag, metric_watcher_sets, app_config = pharos.config.load(options.yaml_config_file)
+
     http_server = tornado.httpserver.HTTPServer(application)
-    http_server.listen(options.port)
+    http_server.listen(app_config.get("listen_port", 8080), address=app_config.get("listen_host", "0.0.0.0"))
 
     io_loop = tornado.ioloop.IOLoop.instance()
 
     page_tag = None
-
-    if options.config_file:
-        execfile(options.config_file)
-    elif options.yaml_config_file:
-        page_tag, metric_watcher_sets = pharos.config.load(options.yaml_config_file)
 
     # We're just going to stuff this variable into our application even though tornado knows nothing about it
     # Allows us to avoid nasty global
